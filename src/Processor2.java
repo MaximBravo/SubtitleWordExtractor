@@ -26,8 +26,9 @@ public class Processor2 {
 	
 	private void add(HashMap<Entry, Integer> result, HashMap<Entry, Integer> currentWords) {
 		for (Entry key : currentWords.keySet()) {
-			if (result.containsKey(key)) {
-				result.put(key, result.get(key) + 1);
+			Entry keyReal = get(result, key.getChinese());
+			if (keyReal != null) {
+				result.put(keyReal, result.get(keyReal) + 1);
 			} else {
 				result.put(key, 1);
 			}
@@ -51,23 +52,12 @@ public class Processor2 {
 						}
 						i += substring.length() - 1;
 						
-						if (runningString.length() > 0) {
-							String[] attributes = {runningString, "", "", "7"};
-							Entry hsk7 = new Entry(attributes);
-							if (result.containsKey(hsk7)) {
-								result.put(hsk7, result.get(hsk7) + 1);
-							} else {
-								result.put(hsk7, 1);
-							}
-							System.out.println(hsk7);
-							runningString = "";
-						}
+						runningString = addHsk7(sentence, result, runningString);
 						
-						System.out.println(entry);
 						break;
 					} else {
 						if (k == 1) {
-							runningString += substring; 
+							runningString += substring.trim(); 
 						}
 					}
 				}
@@ -75,27 +65,46 @@ public class Processor2 {
 			}
 		}
 		
-		if (runningString.length() > 0) {
-			String[] attributes = {runningString, "", "", "7"};
-			Entry hsk7 = new Entry(attributes);
-			if (result.containsKey(hsk7)) {
-				result.put(hsk7, result.get(hsk7) + 1);
-			} else {
-				result.put(hsk7, 1);
-			}
-			System.out.println(hsk7);
-			runningString = "";
-		}
-		//printMap(result);
+		addHsk7(sentence, result, runningString);
 		return result;
 	}
+
+	private String addHsk7(String sentence, HashMap<Entry, Integer> result, String runningString) {
+		if (runningString.length() > 0) {
+			//System.out.println("{" + runningString + "} " + runningString.length());
+			
+			Entry key = get(result, runningString);
+			if (key != null) {
+				result.put(key, result.get(key) + 1);
+			} else {
+				String[] attributes = {runningString, sentence, "", "7"};
+				result.put(new Entry(attributes), 1);
+			}
+			runningString = "";
+		}
+		return runningString;
+	}
 	
+
+
+	private Entry get(HashMap<Entry, Integer> result, String runningString) {
+		//if (runningString.equals("椿")) {
+			for (Entry key : result.keySet()) {
+				String chinese = key.getChinese();
+				if (chinese.equals(runningString)) {
+					return key;
+				}
+			}
+		//}
+		return null;
+	}
+
 	private void printMap(HashMap<Entry, Integer> result) {
 		int count = 0;
 		for (Entry key : result.keySet()) {
 			int occ = result.get(key);
 			int hsk = key.getLevel();
-			if (hsk == 7) {
+			if (hsk == 7) {//&& key.getChinese().equals("椿")) {
 				System.out.println(occ + " : " + key);
 				count++;
 			}
