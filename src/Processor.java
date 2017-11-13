@@ -11,30 +11,62 @@ public class Processor {
 		this.data = data;
 	}
 	
-	public void process() {
+	public void process2() {
 		HashMap<Entry, Integer> result = new HashMap<>();
 		for (int i = 0; i < data.size(); i++) {
 			Entry currentEntry = data.get(i);
 			String sentence = currentEntry.getChinese();
 			//System.out.println("sentence: " + sentence);
 			ArrayList<Entry> currentWords = algorithm(sentence);
+			//addNonDictionaryItems(currentWords, sentence);
 			addListToMap(result, currentWords);
 		}
 		int count = 0;
 		for (Entry key : result.keySet()) {
 			int value = result.get(key);
 			String word =  key.getChinese();
-			//if (key.getLevel() == 6 && value >= 2) {
+			if (key.getLevel() <= 7 && value >= 1) {
 				System.out.println(value + " : " + key);
 				count+=value*word.length();
-			//}
+			}
 		}
 		System.out.println(count);
 		//generateStatTable();
 	}
 
-	public void process2() {
-		algorithm("现在海棠");
+	private void addNonDictionaryItems(ArrayList<Entry> currentWords, String sentence) {
+		ArrayList<String> notInDictionary = new ArrayList<String>();
+		int longestWord = 0;
+		for (int i = 0; i < sentence.length(); i++) {
+			//System.out.println(i);
+			for (int j = 0; j < currentWords.size(); j++) {
+				String currentWord = currentWords.get(j).getChinese();
+				if(currentWord.length() > longestWord) {
+					longestWord = currentWord.length();
+				}
+				//System.out.println("***" + i);
+				if (i + currentWord.length() <= sentence.length()) {
+					//System.out.println((sentence.substring(i, i + currentWord.length())));
+					if(sentence.substring(i, i + currentWord.length()).equals(currentWord)) {
+						if(i != 0) {
+							notInDictionary.add(sentence.substring(0, i));
+							System.out.println(sentence.substring(0, i));
+						}
+						//System.out.println(i);
+						sentence = sentence.substring(i + currentWord.length(), sentence.length());
+						//System.out.println("trim: " + sentence);
+						i = -1;
+						//System.out.println(i);
+						break;
+					}
+				}
+			}
+			
+		}
+	}
+
+	public void process() {
+		addNonDictionaryItems(algorithm("我们是我们现在海棠我佛我们"), "我们是我们现在海棠我佛我们");
 	}
 
 
@@ -89,26 +121,50 @@ public class Processor {
 //			}
 //			if (add) {
 //				notInDictionary.add(parts.get(i));
-//				System.out.println(parts.get(i));
+//				//System.out.println(parts.get(i));
 //			}
 //		}
 //		
+//		ArrayList<String> hsk7 = new ArrayList<String>();
 //		for (int i = 0; i < notInDictionary.size(); i++) {
+//			boolean add = true;
 //			for (int j = 0; j < inDictionary.size(); j++) {
-//				if (notInDictionary.get(i).length() >= inDictionary.get(j).length()) {
-//					if (contains(notInDictionary.get(i), inDictionary.get(j))) {
-//						
-//					}
+//				if (contains(notInDictionary.get(i), inDictionary.get(j))) {
+//					add = false;
 //				}
 //			}
+//			if (add) {
+//				hsk7.add(notInDictionary.get(i));
+//				//System.out.println(notInDictionary.get(i));
+//			}
+//		}
+//		
+//		ArrayList<String> siftedHsk7 = new ArrayList<String>();
+//		for(int i = 0; i < hsk7.size(); i++) {
+//			boolean add = true;
+//			for (int j = 0; j < siftedHsk7.size(); j++) {
+//				if (siftedHsk7.get(j).contains(hsk7.get(i))) {
+//					add = false;
+//					break;
+//				}
+//			}
+//			if (add) {
+//				siftedHsk7.add(hsk7.get(i));
+//				//System.out.println(hsk7.get(i));
+//			}
+//		}
+//		
+//		for (int i = 0; i < siftedHsk7.size(); i++) {
+//			String[] attributes = {siftedHsk7.get(i), "N/A", "N/A", "7"};
+//			Entry word = new Entry(attributes);
+//			siftedParts.add(word);
 //		}
 		return siftedParts;
 	}
 	
 	
-	private boolean contains(String big, String small) {
-		
-		return false;
+	private boolean contains(String a, String b) {
+		return a.contains(b) || b.contains(a);
 	}
 
 	private boolean has(ArrayList<String> list, String word) {

@@ -9,7 +9,7 @@ public class SubtitleWordExtractor {
 		
 		Dictionary bfb = new Dictionary("C:\\Users\\Maxim Bravo\\Desktop\\ChineseExtraction\\BFB.csv");
 		//System.out.println(bfb);
-		Processor processor = new Processor(hskBig, bfb);
+		Processor2 processor = new Processor2(hskBig, bfb);
 		processor.process();
 	}
 }
