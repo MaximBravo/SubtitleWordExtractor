@@ -70,14 +70,15 @@ public class Processor2 {
 	}
 
 	private String addHsk7(String sentence, HashMap<Entry, Integer> result, String runningString) {
-		if (runningString.length() > 0) {
+		if (runningString.length() > 0) { //)&& runningString.equals("海")) {
 			//System.out.println("{" + runningString + "} " + runningString.length());
 			
 			Entry key = get(result, runningString);
 			if (key != null) {
 				result.put(key, result.get(key) + 1);
 			} else {
-				String[] attributes = {runningString, sentence, "", "7"};
+				String[] attributes = {runningString, sentence, "", "8"};
+				//System.out.println(attributes[0] + " : " + sentence);
 				result.put(new Entry(attributes), 1);
 			}
 			runningString = "";
@@ -104,8 +105,8 @@ public class Processor2 {
 		for (Entry key : result.keySet()) {
 			int occ = result.get(key);
 			int hsk = key.getLevel();
-			if (hsk == 7) {//&& key.getChinese().equals("椿")) {
-				System.out.println(occ + " : " + key);
+			if (hsk == 8 && occ >= 3) {
+				System.out.println(occ + " : " + key.getChinese());
 				count++;
 			}
 			
